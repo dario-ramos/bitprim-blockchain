@@ -60,6 +60,8 @@ std::error_code organizer_impl::verify(size_t fork_point,
     if (stopped())
         return error::service_stopped;
 
+    log_info(LOG_BLOCKCHAIN) << "FER - organizer_impl::verify(...) - 1";
+
     BITCOIN_ASSERT(orphan_index < orphan_chain.size());
     const auto& current_block = orphan_chain[orphan_index]->actual();
     const size_t height = fork_point + orphan_index + 1;
@@ -70,26 +72,42 @@ std::error_code organizer_impl::verify(size_t fork_point,
         return stopped();
     };
 
+    log_info(LOG_BLOCKCHAIN) << "FER - organizer_impl::verify(...) - 2";
+
+
     validate_block_impl validate(interface_, fork_point, orphan_chain,
         orphan_index, height, current_block, checkpoints_, callback);
+
+    log_info(LOG_BLOCKCHAIN) << "FER - organizer_impl::verify(...) - 3";
+
 
     // Checks that are independent of the chain.
     auto ec = validate.check_block();
     if (ec)
         return ec;
 
+
+    log_info(LOG_BLOCKCHAIN) << "FER - organizer_impl::verify(...) - 4";
+
+
     validate.initialize_context();
+
+    log_info(LOG_BLOCKCHAIN) << "FER - organizer_impl::verify(...) - 5";
 
     // Checks that are dependent on height and preceding blocks.
     ec = validate.accept_block();
     if (ec)
         return ec;
 
+    log_info(LOG_BLOCKCHAIN) << "FER - organizer_impl::verify(...) - 6";
+
     // Start strict validation if past last checkpoint.
     if (strict(fork_point))
     {
         const auto total_inputs = count_inputs(current_block);
         const auto total_transactions = current_block.transactions.size();
+
+        log_info(LOG_BLOCKCHAIN) << "FER - organizer_impl::verify(...) - 7";
 
         log_info(LOG_BLOCKCHAIN)
             << "Block [" << height << "] verify ("
