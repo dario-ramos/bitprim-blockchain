@@ -488,6 +488,9 @@ bool validate_block::is_valid_coinbase_height(size_t height,
 
 std::error_code validate_block::connect_block() const
 {
+
+    log_info(LOG_BLOCKCHAIN) << "FER - validate_block::connect_block(...) - 1";
+
     const auto& transactions = current_block_.transactions;
 
     // These coinbase transactions are spent and are not indexed.
@@ -502,6 +505,9 @@ std::error_code validate_block::connect_block() const
             RETURN_IF_STOPPED();
         }
     }
+
+    log_info(LOG_BLOCKCHAIN) << "FER - validate_block::connect_block(...) - 2";
+
 
     uint64_t fees = 0;
     size_t total_sigops = 0;
@@ -518,6 +524,7 @@ std::error_code validate_block::connect_block() const
         if (total_sigops > max_block_script_sig_operations)
             return error::too_many_sigs;
 
+        log_info(LOG_BLOCKCHAIN) << "FER - validate_block::connect_block(...) - 3";
         RETURN_IF_STOPPED();
 
         // Count sigops for tx 0, but we don't perform
@@ -525,24 +532,36 @@ std::error_code validate_block::connect_block() const
         if (is_coinbase(tx))
             continue;
 
+
+        log_info(LOG_BLOCKCHAIN) << "FER - validate_block::connect_block(...) - 4";
         RETURN_IF_STOPPED();
 
         // Consensus checks here.
         if (!validate_inputs(tx, tx_index, value_in, total_sigops))
             return error::validate_inputs_failed;
 
+        log_info(LOG_BLOCKCHAIN) << "FER - validate_block::connect_block(...) - 5";
         RETURN_IF_STOPPED();
 
         if (!validate_transaction::tally_fees(tx, value_in, fees))
             return error::fees_out_of_range;
+
+        log_info(LOG_BLOCKCHAIN) << "FER - validate_block::connect_block(...) - 6";
+
     }
 
     RETURN_IF_STOPPED();
 
     const auto& coinbase = transactions.front();
     const auto coinbase_value = total_output_value(coinbase);
+
+    log_info(LOG_BLOCKCHAIN) << "FER - validate_block::connect_block(...) - 7";
+
+
     if (coinbase_value > block_value(height_) + fees)
         return error::coinbase_too_large;
+
+    log_info(LOG_BLOCKCHAIN) << "FER - validate_block::connect_block(...) - 8";
 
     return error::success;
 }
