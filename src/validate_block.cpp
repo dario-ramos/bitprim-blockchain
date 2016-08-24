@@ -489,7 +489,7 @@ bool validate_block::is_valid_coinbase_height(size_t height,
 std::error_code validate_block::connect_block() const
 {
 
-    log_info(LOG_BLOCKCHAIN) << "FER - validate_block::connect_block(...) - 1";
+    //log_info(LOG_BLOCKCHAIN) << "FER - validate_block::connect_block(...) - 1";
 
     const auto& transactions = current_block_.transactions;
 
@@ -506,7 +506,7 @@ std::error_code validate_block::connect_block() const
         }
     }
 
-    log_info(LOG_BLOCKCHAIN) << "FER - validate_block::connect_block(...) - 2";
+    //log_info(LOG_BLOCKCHAIN) << "FER - validate_block::connect_block(...) - 2";
 
 
     uint64_t fees = 0;
@@ -524,7 +524,7 @@ std::error_code validate_block::connect_block() const
         if (total_sigops > max_block_script_sig_operations)
             return error::too_many_sigs;
 
-        log_info(LOG_BLOCKCHAIN) << "FER - validate_block::connect_block(...) - 3";
+        //log_info(LOG_BLOCKCHAIN) << "FER - validate_block::connect_block(...) - 3";
         RETURN_IF_STOPPED();
 
         // Count sigops for tx 0, but we don't perform
@@ -533,20 +533,20 @@ std::error_code validate_block::connect_block() const
             continue;
 
 
-        log_info(LOG_BLOCKCHAIN) << "FER - validate_block::connect_block(...) - 4";
+        //log_info(LOG_BLOCKCHAIN) << "FER - validate_block::connect_block(...) - 4";
         RETURN_IF_STOPPED();
 
         // Consensus checks here.
         if (!validate_inputs(tx, tx_index, value_in, total_sigops))
             return error::validate_inputs_failed;
 
-        log_info(LOG_BLOCKCHAIN) << "FER - validate_block::connect_block(...) - 5";
+        //log_info(LOG_BLOCKCHAIN) << "FER - validate_block::connect_block(...) - 5";
         RETURN_IF_STOPPED();
 
         if (!validate_transaction::tally_fees(tx, value_in, fees))
             return error::fees_out_of_range;
 
-        log_info(LOG_BLOCKCHAIN) << "FER - validate_block::connect_block(...) - 6";
+        //log_info(LOG_BLOCKCHAIN) << "FER - validate_block::connect_block(...) - 6";
 
     }
 
@@ -555,13 +555,13 @@ std::error_code validate_block::connect_block() const
     const auto& coinbase = transactions.front();
     const auto coinbase_value = total_output_value(coinbase);
 
-    log_info(LOG_BLOCKCHAIN) << "FER - validate_block::connect_block(...) - 7";
+    //log_info(LOG_BLOCKCHAIN) << "FER - validate_block::connect_block(...) - 7";
 
 
     if (coinbase_value > block_value(height_) + fees)
         return error::coinbase_too_large;
 
-    log_info(LOG_BLOCKCHAIN) << "FER - validate_block::connect_block(...) - 8";
+    //log_info(LOG_BLOCKCHAIN) << "FER - validate_block::connect_block(...) - 8";
 
     return error::success;
 }
@@ -591,13 +591,13 @@ bool validate_block::validate_inputs(const transaction_type& tx,
 {
     BITCOIN_ASSERT(!is_coinbase(tx));
 
-    log_info(LOG_BLOCKCHAIN) << "FER - validate_block::validate_inputs(...) - 1";
-    log_info(LOG_BLOCKCHAIN) << "FER - validate_block::validate_inputs(...) - tx.inputs.size(): " << tx.inputs.size();
+    //log_info(LOG_BLOCKCHAIN) << "FER - validate_block::validate_inputs(...) - 1";
+    //log_info(LOG_BLOCKCHAIN) << "FER - validate_block::validate_inputs(...) - tx.inputs.size(): " << tx.inputs.size();
 
     ////////////// TODO: parallelize. //////////////
     for (size_t input_index = 0; input_index < tx.inputs.size(); ++input_index) {
 
-        log_info(LOG_BLOCKCHAIN) << "FER - validate_block::validate_inputs(...) - input_index: " << input_index;
+        //log_info(LOG_BLOCKCHAIN) << "FER - validate_block::validate_inputs(...) - input_index: " << input_index;
 
         if (!connect_input(index_in_parent, tx, input_index, value_in, total_sigops)) {
             log_warning(LOG_VALIDATE) << "Invalid input ["
@@ -607,7 +607,7 @@ bool validate_block::validate_inputs(const transaction_type& tx,
         }
     }
 
-    log_info(LOG_BLOCKCHAIN) << "FER - validate_block::validate_inputs(...) - 2";
+    //log_info(LOG_BLOCKCHAIN) << "FER - validate_block::validate_inputs(...) - 2";
 
     return true;
 }
@@ -632,7 +632,7 @@ bool validate_block::connect_input(size_t index_in_parent,
 {
     BITCOIN_ASSERT(input_index < current_tx.inputs.size());
 
-    log_info(LOG_BLOCKCHAIN) << "FER - validate_block::connect_input(...) - 1";
+    //log_info(LOG_BLOCKCHAIN) << "FER - validate_block::connect_input(...) - 1";
 
     // Lookup previous output
     size_t previous_height;
@@ -640,7 +640,7 @@ bool validate_block::connect_input(size_t index_in_parent,
     const auto& input = current_tx.inputs[input_index];
     const auto& previous_output = input.previous_output;
 
-    log_info(LOG_BLOCKCHAIN) << "FER - validate_block::connect_input(...) - 2";
+    //log_info(LOG_BLOCKCHAIN) << "FER - validate_block::connect_input(...) - 2";
 
     if (!fetch_transaction(previous_tx, previous_height, previous_output.hash))
     {
@@ -650,12 +650,12 @@ bool validate_block::connect_input(size_t index_in_parent,
         return false;
     }
 
-    log_info(LOG_BLOCKCHAIN) << "FER - validate_block::connect_input(...) - 3";
+    //log_info(LOG_BLOCKCHAIN) << "FER - validate_block::connect_input(...) - 3";
 
 
     const auto& previous_tx_out = previous_tx.outputs[previous_output.index];
 
-    log_info(LOG_BLOCKCHAIN) << "FER - validate_block::connect_input(...) - 4";
+    //log_info(LOG_BLOCKCHAIN) << "FER - validate_block::connect_input(...) - 4";
 
 
     // Signature operations count if script_hash payment type.
@@ -670,7 +670,7 @@ bool validate_block::connect_input(size_t index_in_parent,
         return false;
     }
 
-    log_info(LOG_BLOCKCHAIN) << "FER - validate_block::connect_input(...) - 5";
+    //log_info(LOG_BLOCKCHAIN) << "FER - validate_block::connect_input(...) - 5";
 
 
     if (total_sigops > max_block_script_sig_operations)
@@ -679,7 +679,7 @@ bool validate_block::connect_input(size_t index_in_parent,
         return false;
     }
 
-    log_info(LOG_BLOCKCHAIN) << "FER - validate_block::connect_input(...) - 6";
+    //log_info(LOG_BLOCKCHAIN) << "FER - validate_block::connect_input(...) - 6";
 
 
     // Get output amount
@@ -690,7 +690,7 @@ bool validate_block::connect_input(size_t index_in_parent,
         return false;
     }
 
-    log_info(LOG_BLOCKCHAIN) << "FER - validate_block::connect_input(...) - 7";
+    //log_info(LOG_BLOCKCHAIN) << "FER - validate_block::connect_input(...) - 7";
 
 
     // Check coinbase maturity has been reached
@@ -705,7 +705,7 @@ bool validate_block::connect_input(size_t index_in_parent,
         }
     }
 
-    log_info(LOG_BLOCKCHAIN) << "FER - validate_block::connect_input(...) - 8";
+    //log_info(LOG_BLOCKCHAIN) << "FER - validate_block::connect_input(...) - 8";
 
 
     if (!validate_transaction::check_consensus(previous_tx_out.script,
@@ -715,7 +715,7 @@ bool validate_block::connect_input(size_t index_in_parent,
         return false;
     }
 
-    log_info(LOG_BLOCKCHAIN) << "FER - validate_block::connect_input(...) - 9";
+    //log_info(LOG_BLOCKCHAIN) << "FER - validate_block::connect_input(...) - 9";
 
 
     // Search for double spends.
@@ -725,7 +725,7 @@ bool validate_block::connect_input(size_t index_in_parent,
         return false;
     }
 
-    log_info(LOG_BLOCKCHAIN) << "FER - validate_block::connect_input(...) - 10";
+    //log_info(LOG_BLOCKCHAIN) << "FER - validate_block::connect_input(...) - 10";
 
 
     // Increase value_in by this output's value
@@ -736,7 +736,7 @@ bool validate_block::connect_input(size_t index_in_parent,
         return false;
     }
 
-    log_info(LOG_BLOCKCHAIN) << "FER - validate_block::connect_input(...) - 11";
+    //log_info(LOG_BLOCKCHAIN) << "FER - validate_block::connect_input(...) - 11";
 
 
     return true;
