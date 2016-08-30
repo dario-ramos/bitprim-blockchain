@@ -235,8 +235,14 @@ std::error_code validate_block::check_block() const
 
     RETURN_IF_STOPPED();
 
-    if (header.merkle != generate_merkle_root(transactions))
+    auto merkle_root = generate_merkle_root(transactions);
+    log_info(LOG_BLOCKCHAIN) << "FER - validate_block::check_block() - merkle_root: " << encode_hash(merkle_root);
+
+    if (header.merkle != merkle_root)
         return error::merkle_mismatch;
+
+    // if (header.merkle != generate_merkle_root(transactions))
+    //     return error::merkle_mismatch;
 
     return error::success;
 }
@@ -641,7 +647,7 @@ bool validate_block::connect_input(size_t index_in_parent,
     const auto& previous_output = input.previous_output;
 
     //log_info(LOG_BLOCKCHAIN) << "FER - validate_block::connect_input(...) - 2";
-
+    //TODO: Fer: Has to be improved. Prioriry 1
     if (!fetch_transaction(previous_tx, previous_height, previous_output.hash))
     {
         log_warning(LOG_VALIDATE)
@@ -707,7 +713,7 @@ bool validate_block::connect_input(size_t index_in_parent,
 
     //log_info(LOG_BLOCKCHAIN) << "FER - validate_block::connect_input(...) - 8";
 
-
+    //TODO: Fer: Has to be improved. Prioriry 2
     if (!validate_transaction::check_consensus(previous_tx_out.script,
         current_tx, input_index, activations_))
     {
@@ -718,6 +724,7 @@ bool validate_block::connect_input(size_t index_in_parent,
     //log_info(LOG_BLOCKCHAIN) << "FER - validate_block::connect_input(...) - 9";
 
 
+    //TODO: Fer: Has to be improved. Prioriry 0
     // Search for double spends.
     if (is_output_spent(previous_output, index_in_parent, input_index))
     {
