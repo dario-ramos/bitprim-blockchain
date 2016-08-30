@@ -119,28 +119,44 @@ bool validate_block_impl::transaction_exists(const hash_digest& tx_hash) const
     return !tx_after_fork(result.height(), fork_index_);
 }
 
+// bool validate_block_impl::is_output_spent(
+//     const output_point& outpoint) const
+// {
+//     log_info(LOG_BLOCKCHAIN) << "FER - validate_block_impl::is_output_spent(...1 parameters...) - 1";
+
+//     const auto result = interface_.spends.get(outpoint);
+    
+//     log_info(LOG_BLOCKCHAIN) << "FER - validate_block_impl::is_output_spent(...1 parameters...) - 2";
+
+//     if (!result)
+//         return false;
+
+//     // Lookup block height. Is the spend after the fork point?
+//     auto hash = result.hash();
+
+//     log_info(LOG_BLOCKCHAIN) << "FER - validate_block_impl::is_output_spent(...1 parameters...) - 3";
+
+//     auto res = transaction_exists(hash);
+
+//     log_info(LOG_BLOCKCHAIN) << "FER - validate_block_impl::is_output_spent(...1 parameters...) - 4";
+
+//     return res;
+// }
+
 bool validate_block_impl::is_output_spent(
     const output_point& outpoint) const
 {
-    log_info(LOG_BLOCKCHAIN) << "FER - validate_block_impl::is_output_spent(...1 parameters...) - 1";
+    // log_info(LOG_BLOCKCHAIN) << "FER - validate_block_impl::is_output_spent(...1 parameters...) - 1";
 
     const auto result = interface_.spends.get(outpoint);
     
-    log_info(LOG_BLOCKCHAIN) << "FER - validate_block_impl::is_output_spent(...1 parameters...) - 2";
+    // log_info(LOG_BLOCKCHAIN) << "FER - validate_block_impl::is_output_spent(...1 parameters...) - 2";
 
     if (!result)
         return false;
 
     // Lookup block height. Is the spend after the fork point?
-    auto hash = result.hash();
-
-    log_info(LOG_BLOCKCHAIN) << "FER - validate_block_impl::is_output_spent(...1 parameters...) - 3";
-
-    auto res = transaction_exists(hash);
-
-    log_info(LOG_BLOCKCHAIN) << "FER - validate_block_impl::is_output_spent(...1 parameters...) - 4";
-
-    return res;
+    return transaction_exists(result.hash());
 }
 
 bool validate_block_impl::fetch_transaction(transaction_type& tx,
@@ -178,25 +194,25 @@ bool validate_block_impl::is_output_spent(const output_point& previous_output,
     size_t index_in_parent, size_t input_index) const
 {
 
-    log_info(LOG_BLOCKCHAIN) << "FER - validate_block_impl::is_output_spent(...3 parameters...) - 1";
+    // log_info(LOG_BLOCKCHAIN) << "FER - validate_block_impl::is_output_spent(...3 parameters...) - 1";
 
     // Search for double spends. This must be done in both chain AND orphan.
     // Searching chain when this tx is an orphan is redundant but it does not
     // happen enough to care.
     if (is_output_spent(previous_output)) {
-        log_info(LOG_BLOCKCHAIN) << "FER - validate_block_impl::is_output_spent(...3 parameters...) - 2";
+        // log_info(LOG_BLOCKCHAIN) << "FER - validate_block_impl::is_output_spent(...3 parameters...) - 2";
         return true;
     }
 
-    log_info(LOG_BLOCKCHAIN) << "FER - validate_block_impl::is_output_spent(...3 parameters...) - 3";
+    // log_info(LOG_BLOCKCHAIN) << "FER - validate_block_impl::is_output_spent(...3 parameters...) - 3";
 
 
     if (orphan_is_spent(previous_output, index_in_parent, input_index)) {
-        log_info(LOG_BLOCKCHAIN) << "FER - validate_block_impl::is_output_spent(...3 parameters...) - 4";
+        // log_info(LOG_BLOCKCHAIN) << "FER - validate_block_impl::is_output_spent(...3 parameters...) - 4";
         return true;
     }
 
-    log_info(LOG_BLOCKCHAIN) << "FER - validate_block_impl::is_output_spent(...3 parameters...) - 5";
+    // log_info(LOG_BLOCKCHAIN) << "FER - validate_block_impl::is_output_spent(...3 parameters...) - 5";
 
     return false;
 }
