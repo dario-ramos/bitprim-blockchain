@@ -28,6 +28,7 @@
 #include <bitcoin/blockchain/database/transaction_database.hpp>
 #include <bitcoin/blockchain/database/history_database.hpp>
 #include <bitcoin/blockchain/database/stealth_database.hpp>
+#include <bitcoin/blockchain/database/utxo_database.hpp>
 
 namespace libbitcoin {
 namespace chain {
@@ -54,6 +55,7 @@ struct BCB_API db_paths
     boost::filesystem::path history_rows;
     boost::filesystem::path stealth_index;
     boost::filesystem::path stealth_rows;
+    boost::filesystem::path utxos;
 };
 
 // TODO: rename to 'database' (interface break).
@@ -76,6 +78,9 @@ public:
     // Optional databases.
     history_database history;
     stealth_database stealth;
+
+    // Bitprim improvement
+    uxto_database uxtos;
 
 private:
     void push_inputs(

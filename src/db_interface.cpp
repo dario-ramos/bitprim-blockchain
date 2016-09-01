@@ -62,6 +62,7 @@ db_paths::db_paths(const path& prefix)
     history_rows = prefix / "history_rows";
     stealth_index = prefix / "stealth_index";
     stealth_rows = prefix / "stealth_rows";
+    utxos = prefix / "utxos";
 }
 
 bool db_paths::touch_all() const
@@ -74,7 +75,8 @@ bool db_paths::touch_all() const
         touch_file(history_lookup) &&
         touch_file(history_rows) &&
         touch_file(stealth_index) &&
-        touch_file(stealth_rows);
+        touch_file(stealth_rows) &&
+        touch_file(utxos);
 }
 
 db_interface::db_interface(const db_paths& paths,
@@ -84,6 +86,7 @@ db_interface::db_interface(const db_paths& paths,
     transactions(paths.transactions),
     history(paths.history_lookup, paths.history_rows),
     stealth(paths.stealth_index, paths.stealth_rows),
+    utxos(paths.utxos),
     active_heights_(active_heights)
 {
 }
@@ -95,6 +98,7 @@ void db_interface::create()
     transactions.create();
     history.create();
     stealth.create();
+    utxos.create();
 }
 
 void db_interface::start()
@@ -104,6 +108,7 @@ void db_interface::start()
     transactions.start();
     history.start();
     stealth.start();
+    utxos.start();
 }
 
 size_t next_height(const size_t current_height)
@@ -158,6 +163,8 @@ void db_interface::push(const block_type& block)
     transactions.sync();
     history.sync();
     stealth.sync();
+
+    utxos.sync();
 
     // ... do block header last so if there's a crash midway
     // then on the next startup we'll try to redownload the
@@ -215,7 +222,7 @@ void db_interface::push_inputs(const hash_digest& tx_hash,
     for (uint32_t i = 0; i < inputs.size(); ++i)
     {
         const auto& input = inputs[i];
-        const input_point spend{tx_hash, i};
+        const input_point spend{tx_hash, i};            //TODO: Fer: [UTXO] ver ahora como hacer esto con los UTXO's
         spends.store(input.previous_output, spend);
 
         // Skip history if not at the right level yet.
@@ -304,7 +311,7 @@ void db_interface::pop_inputs(const size_t block_height,
     for (int i = inputs.size() - 1; i >= 0; --i)
     {
         const auto& input = inputs[i];
-        spends.remove(input.previous_output);
+        spends.remove(input.previous_output);                       //TODO: Fer: [UTXO] ver ahora como hacer esto con los UTXO's
 
         // Skip history if not at the right level yet.
         if (block_height < active_heights_.history)
