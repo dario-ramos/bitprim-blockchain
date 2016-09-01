@@ -72,7 +72,7 @@ void test_block_exists(const db_interface& interface,
             {
                 const transaction_input_type& input = tx.inputs[j];
                 input_point spend{tx_hash, static_cast<uint32_t>(j)};
-                auto r0_spend = interface.spends.get(input.previous_output);
+                auto r0_spend = interface.spends.get(input.previous_output);        //TODO: Fer: [UTXO] reemplazar con UTXO
                 BOOST_REQUIRE(r0_spend);
                 BOOST_REQUIRE(r0_spend.hash() == spend.hash);
                 BOOST_REQUIRE(r0_spend.index() == spend.index);
@@ -138,7 +138,7 @@ void test_block_not_exists(
             {
                 const transaction_input_type& input = tx.inputs[j];
                 input_point spend{tx_hash, static_cast<uint32_t>(j)};
-                auto r0_spend = interface.spends.get(input.previous_output);
+                auto r0_spend = interface.spends.get(input.previous_output);            //TODO: Fer: [UTXO] reemplazar con UTXO
                 BOOST_REQUIRE(!r0_spend);
 
                 payment_address address;

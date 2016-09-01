@@ -124,7 +124,7 @@ bool validate_block_impl::transaction_exists(const hash_digest& tx_hash) const
 // {
 //     log_info(LOG_BLOCKCHAIN) << "FER - validate_block_impl::is_output_spent(...1 parameters...) - 1";
 
-//     const auto result = interface_.spends.get(outpoint);
+//     const auto result = interface_.spends.get(outpoint);    //TODO: Fer: [UTXO] reemplazar con UTXO
     
 //     log_info(LOG_BLOCKCHAIN) << "FER - validate_block_impl::is_output_spent(...1 parameters...) - 2";
 
@@ -148,7 +148,7 @@ bool validate_block_impl::is_output_spent(
 {
     // log_info(LOG_BLOCKCHAIN) << "FER - validate_block_impl::is_output_spent(...1 parameters...) - 1";
 
-    const auto result = interface_.spends.get(outpoint);
+    const auto result = interface_.spends.get(outpoint);        //TODO: Fer: [UTXO] reemplazar con UTXO
     
     // log_info(LOG_BLOCKCHAIN) << "FER - validate_block_impl::is_output_spent(...1 parameters...) - 2";
 

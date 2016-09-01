@@ -430,7 +430,7 @@ void blockchain_impl::fetch_spend(const output_point& outpoint,
 {
     const auto do_fetch = [this, outpoint, handle_fetch](size_t slock)
     {
-        const auto result = interface_.spends.get(outpoint);
+        const auto result = interface_.spends.get(outpoint);        //TODO: Fer: [UTXO] reemplazar con UTXO
         if (!result)
             return finish_fetch(slock, handle_fetch,
                 error::unspent_output, input_point());
