@@ -242,6 +242,7 @@ bool block_chain_impl::get_outpoint_transaction(hash_digest& out_transaction,
 
 bool block_chain_impl::contains_outpoint_in_utxo(output_point const& outpoint) const
 {
+    std::cout << "bool block_chain_impl::contains_outpoint_in_utxo(output_point const& outpoint) const\n";
     return database_.unspents.contains(outpoint);
 }
 
