@@ -187,7 +187,7 @@ bool validate_block_impl::is_output_spent(
     //     chain_.get_transaction_height(tx_height, tx_hash) &&
     //     tx_height <= fork_index_;
 
-    libbtc_method = libbtc_method_1 && libbtc_method_2 && libbtc_method_3;
+    auto libbtc_method = libbtc_method_1 && libbtc_method_2 && libbtc_method_3;
 
     auto fer_method = !chain_.contains_outpoint_in_utxo(outpoint);
 
