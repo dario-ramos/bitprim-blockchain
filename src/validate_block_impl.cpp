@@ -187,13 +187,22 @@ bool validate_block_impl::is_output_spent(
     //     chain_.get_transaction_height(tx_height, tx_hash) &&
     //     tx_height <= fork_index_;
 
+    libbtc_method = libbtc_method_1 && libbtc_method_2 && libbtc_method_3;
 
     auto fer_method = !chain_.contains_outpoint_in_utxo(outpoint);
 
-    std::cout << "libbtc_method_1: " << libbtc_method_1 << '\n';
-    std::cout << "libbtc_method_2: " << libbtc_method_2 << '\n';
-    std::cout << "libbtc_method_3: " << libbtc_method_3 << '\n';
-    std::cout << "fer_method:      " << fer_method << '\n';
+    if (fer_method != libbtc_method) {
+        std::cout << "outpoint.hash:   " << encode_hash(outpoint.hash) << '\n';
+        std::cout << "outpoint.index:  " << outpoint.index << '\n';
+
+        // std::cout << "tx_height:   " << tx_height << '\n';
+        // std::cout << "fork_index_: " << fork_index_ << '\n';
+
+        std::cout << "libbtc_method_1: " << libbtc_method_1 << '\n';
+        std::cout << "libbtc_method_2: " << libbtc_method_2 << '\n';
+        std::cout << "libbtc_method_3: " << libbtc_method_3 << '\n';
+        std::cout << "fer_method:      " << fer_method << '\n';
+    }
 
     return fer_method;
 
