@@ -416,9 +416,12 @@ bool validate_block::is_unspent(const transaction& tx) const
 {
     auto unspent = false;
 
+    log::info(LOG_BLOCKCHAIN) << "validate_block::is_unspent()" << encode_hash(tx.hash());
+
     //////////////////////////// TODO: parallelize. ///////////////////////////
-    for (uint32_t index = 0; !unspent && index < tx.outputs.size(); ++index)
+    for (uint32_t index = 0; !unspent && index < tx.outputs.size(); ++index) {
         unspent = !is_output_spent({ tx.hash(), index });
+    }
     ///////////////////////////////////////////////////////////////////////////
 
     // BUGBUG: We cannot currently index (spent) duplicates.
@@ -509,6 +512,8 @@ code validate_block::check_input(const transaction& tx, size_t index_in_block,
         return error_code;
 
     RETURN_IF_STOPPED();
+
+    log::info(LOG_BLOCKCHAIN) << "validate_block::check_input()" << encode_hash(tx.hash());
 
     return is_output_spent(previous_point, index_in_block, input_index) ?
         error::double_spend : error::success;
