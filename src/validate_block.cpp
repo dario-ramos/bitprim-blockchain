@@ -437,9 +437,19 @@ bool validate_block::is_unspent(const transaction& tx) const
 }
 
 void store_outputs(std::unordered_set<chain::point>& current_utxo, const transaction& tx)  {
-    uint32_t index = 0;
     const auto tx_hash = tx.hash();
 
+    if (tx_hash == null_hash) {
+        // log::error(LOG_BLOCKCHAIN)
+        //     << "Trying to store a NullHash [" << encode_hash(tx_hash);
+
+        log::info(LOG_BLOCKCHAIN)
+            << "Trying to store a NullHash [" << encode_hash(tx_hash);
+
+        return;
+    }
+
+    uint32_t index = 0;
     for (const auto& output: tx.outputs) {
         const output_point point {tx_hash, index};
         current_utxo.insert(point);
