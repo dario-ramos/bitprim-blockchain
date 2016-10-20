@@ -419,7 +419,7 @@ bool validate_block::is_unspent(const transaction& tx) const
 {
     auto unspent = false;
 
-    log::info(LOG_BLOCKCHAIN) << "validate_block::is_unspent()" << encode_hash(tx.hash());
+    // log::info(LOG_BLOCKCHAIN) << "validate_block::is_unspent()" << encode_hash(tx.hash());
 
     //////////////////////////// TODO: parallelize. ///////////////////////////
     for (uint32_t index = 0; !unspent && index < tx.outputs.size(); ++index) {
@@ -482,7 +482,7 @@ code validate_block::check_inputs(uxto_hash_type const& current_utxo, const tran
     code error_code(error::success);
     size_t index = 0;
 
-    log::info(LOG_BLOCKCHAIN) << "-- validate_block::check_inputs()" << encode_hash(tx.hash());
+    // log::info(LOG_BLOCKCHAIN) << "-- validate_block::check_inputs()" << encode_hash(tx.hash());
 
     //////////////////////////// TODO: parallelize. ///////////////////////////
     for (; !error_code && index < tx.inputs.size(); ++index) {
