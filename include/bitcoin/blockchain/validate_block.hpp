@@ -45,6 +45,7 @@ public:
 protected:
     typedef std::vector<uint8_t> versions;
     typedef std::function<bool()> stopped_callback;
+    using uxto_hash_type = std::unordered_set<chain::point>;
 
     validate_block(size_t height, const chain::block& block,
         bool testnet, const config::checkpoint::list& checks,
@@ -68,11 +69,11 @@ protected:
     bool contains_unspent_duplicates() const;
     uint32_t work_required(bool is_testnet) const;
 
-    code check_transaction(const chain::transaction& tx,
+    code check_transaction(uxto_hash_type& current_utxo, const chain::transaction& tx,
         size_t index_in_block, uint64_t& fees, size_t& sigops) const;
-    code check_inputs(const chain::transaction& tx, size_t index_in_block,
+    code check_inputs(uxto_hash_type const& current_utxo, const chain::transaction& tx, size_t index_in_block,
         uint64_t& value, size_t& sigops) const;
-    code check_input(const chain::transaction& tx, size_t index_in_block,
+    code check_input(uxto_hash_type const& current_utxo, const chain::transaction& tx, size_t index_in_block,
         size_t input_index, uint64_t& value, size_t& sigops) const;
     code check_sigops(const  chain::script& output,
         const  chain::script& input, size_t& sigops) const;
