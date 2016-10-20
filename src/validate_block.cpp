@@ -384,7 +384,7 @@ code validate_block::connect_block() const
     //////////////////////////// TODO: parallelize. ///////////////////////////
     // Start at index 1 to skip coinbase.
     for (size_t index = 1; !error_code && index < txs.size(); ++index) {
-        error_code = check_transaction(txs[index], index, block_fees, sigops);
+        error_code = check_transaction(current_utxo, txs[index], index, block_fees, sigops);
     }
     ///////////////////////////////////////////////////////////////////////////
 
@@ -436,7 +436,7 @@ bool validate_block::is_unspent(const transaction& tx) const
     return unspent;
 }
 
-void store_outputs(uxto_hash_type& current_utxo, const transaction& tx)  {
+void store_outputs(std::unordered_set<chain::point>& current_utxo, const transaction& tx)  {
     uint32_t index = 0;
     const auto tx_hash = tx.hash();
 
@@ -446,7 +446,6 @@ void store_outputs(uxto_hash_type& current_utxo, const transaction& tx)  {
         ++index;
     }
 }
-
 
 code validate_block::check_transaction(uxto_hash_type& current_utxo, const transaction& tx, size_t index,
     size_t& fees, size_t& sigops) const
