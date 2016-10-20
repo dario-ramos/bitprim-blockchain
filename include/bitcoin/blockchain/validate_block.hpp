@@ -24,6 +24,7 @@
 #include <cstdint>
 #include <system_error>
 #include <vector>
+#include <unordered_set>
 #include <bitcoin/bitcoin.hpp>
 #include <bitcoin/blockchain/define.hpp>
 
