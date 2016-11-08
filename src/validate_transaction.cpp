@@ -230,10 +230,12 @@ void validate_transaction::handle_previous_tx(const code& ec,
 
     const auto& output = tx_->inputs[current_input_].previous_output;
 
-    // Search for double spends in blockchain store...
-    blockchain_.fetch_spend(output,
-        dispatch_.unordered_delegate(&validate_transaction::handle_spend,
-            shared_from_this(), _1, _2));
+    //TODO: Fer: have to check double-spends in Tx
+
+    // // Search for double spends in blockchain store...
+    // blockchain_.fetch_spend(output,
+    //     dispatch_.unordered_delegate(&validate_transaction::handle_spend,
+    //         shared_from_this(), _1, _2));
 }
 
 // mempool check

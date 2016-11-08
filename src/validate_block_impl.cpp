@@ -167,44 +167,46 @@ bool validate_block_impl::fetch_orphan_transaction(chain::transaction& tx,
 bool validate_block_impl::is_output_spent(
     const chain::output_point& outpoint) const
 {
-    uint64_t tx_height;
-    hash_digest tx_hash;
+    // uint64_t tx_height;
+    // hash_digest tx_hash;
 
-    auto libbtc_method_1 = false;
-    auto libbtc_method_2 = false;
-    auto libbtc_method_3 = false;
+    // auto libbtc_method_1 = false;
+    // auto libbtc_method_2 = false;
+    // auto libbtc_method_3 = false;
 
-    libbtc_method_1 = chain_.get_outpoint_transaction(tx_hash, outpoint);
+    // libbtc_method_1 = chain_.get_outpoint_transaction(tx_hash, outpoint);
     
-    if (libbtc_method_1)
-        libbtc_method_2 = chain_.get_transaction_height(tx_height, tx_hash);
+    // if (libbtc_method_1)
+    //     libbtc_method_2 = chain_.get_transaction_height(tx_height, tx_hash);
 
-    if (libbtc_method_2)
-        libbtc_method_3 = tx_height <= fork_index_;
+    // if (libbtc_method_2)
+    //     libbtc_method_3 = tx_height <= fork_index_;
 
-    // return
-    //     chain_.get_outpoint_transaction(tx_hash, outpoint) &&
-    //     chain_.get_transaction_height(tx_height, tx_hash) &&
-    //     tx_height <= fork_index_;
+    // // return
+    // //     chain_.get_outpoint_transaction(tx_hash, outpoint) &&
+    // //     chain_.get_transaction_height(tx_height, tx_hash) &&
+    // //     tx_height <= fork_index_;
 
-    auto libbtc_method = libbtc_method_1 && libbtc_method_2 && libbtc_method_3;
+    // auto libbtc_method = libbtc_method_1 && libbtc_method_2 && libbtc_method_3;
 
     auto fer_method = !chain_.contains_outpoint_in_utxo(outpoint);
 
-    if (fer_method != libbtc_method) {
-        std::cout << "outpoint.hash:   " << encode_hash(outpoint.hash) << '\n';
-        std::cout << "outpoint.index:  " << outpoint.index << '\n';
+    // if (fer_method != libbtc_method) {
+    //     std::cout << "outpoint.hash:   " << encode_hash(outpoint.hash) << '\n';
+    //     std::cout << "outpoint.index:  " << outpoint.index << '\n';
 
-        // std::cout << "tx_height:   " << tx_height << '\n';
-        // std::cout << "fork_index_: " << fork_index_ << '\n';
+    //     // std::cout << "tx_height:   " << tx_height << '\n';
+    //     // std::cout << "fork_index_: " << fork_index_ << '\n';
 
-        std::cout << "libbtc_method_1: " << libbtc_method_1 << '\n';
-        std::cout << "libbtc_method_2: " << libbtc_method_2 << '\n';
-        std::cout << "libbtc_method_3: " << libbtc_method_3 << '\n';
-        std::cout << "fer_method:      " << fer_method << '\n';
-    }
+    //     std::cout << "libbtc_method_1: " << libbtc_method_1 << '\n';
+    //     std::cout << "libbtc_method_2: " << libbtc_method_2 << '\n';
+    //     std::cout << "libbtc_method_3: " << libbtc_method_3 << '\n';
+    //     std::cout << "fer_method:      " << fer_method << '\n';
+    // }
 
     return fer_method;
+
+
 
     // return !chain_.contains_outpoint_in_utxo(outpoint);
 

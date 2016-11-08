@@ -379,10 +379,13 @@ code validate_block::connect_block() const
     code error_code(error::success);
     const auto& txs = current_block_.transactions;
 
+    uxto_hash_type current_utxo;
+
     //////////////////////////// TODO: parallelize. ///////////////////////////
     // Start at index 1 to skip coinbase.
-    for (size_t index = 1; !error_code && index < txs.size(); ++index)
-        error_code = check_transaction(txs[index], index, block_fees, sigops);
+    for (size_t index = 1; !error_code && index < txs.size(); ++index) {
+        error_code = check_transaction(current_utxo, txs[index], index, block_fees, sigops);
+    }
     ///////////////////////////////////////////////////////////////////////////
 
     if (error_code)
@@ -416,9 +419,12 @@ bool validate_block::is_unspent(const transaction& tx) const
 {
     auto unspent = false;
 
+    // log::info(LOG_BLOCKCHAIN) << "validate_block::is_unspent()" << encode_hash(tx.hash());
+
     //////////////////////////// TODO: parallelize. ///////////////////////////
-    for (uint32_t index = 0; !unspent && index < tx.outputs.size(); ++index)
+    for (uint32_t index = 0; !unspent && index < tx.outputs.size(); ++index) {
         unspent = !is_output_spent({ tx.hash(), index });
+    }
     ///////////////////////////////////////////////////////////////////////////
 
     // BUGBUG: We cannot currently index (spent) duplicates.
@@ -430,14 +436,42 @@ bool validate_block::is_unspent(const transaction& tx) const
     return unspent;
 }
 
-code validate_block::check_transaction(const transaction& tx, size_t index,
+void store_outputs(std::unordered_set<chain::point>& current_utxo, const transaction& tx)  {
+    const auto tx_hash = tx.hash();
+
+    if (tx_hash == null_hash) {
+        // log::error(LOG_BLOCKCHAIN)
+        //     << "Trying to store a NullHash [" << encode_hash(tx_hash);
+
+        log::info(LOG_BLOCKCHAIN)
+            << "Trying to store a NullHash [" << encode_hash(tx_hash);
+
+        return;
+    }
+
+    uint32_t index = 0;
+    for (const auto& output: tx.outputs) {
+        const output_point point {tx_hash, index};
+        current_utxo.insert(point);
+        ++index;
+    }
+}
+
+code validate_block::check_transaction(uxto_hash_type& current_utxo, const transaction& tx, size_t index,
     size_t& fees, size_t& sigops) const
 {
     uint64_t value = 0;
-    const auto error_code = check_inputs(tx, index, value, sigops);
+    const auto error_code = check_inputs(current_utxo, tx, index, value, sigops);
 
     if (error_code)
         return error_code;
+
+    //inserting the outputs in the Local(Tx) UTXO DB
+    store_outputs(current_utxo, tx);
+    // for (auto const& output : tx.outputs) {
+    //     const output_point point {tx.hash(), index };
+    //     current_utxo.insert(point);
+    // }
 
     const auto spent = tx.total_output_value();
 
@@ -451,16 +485,19 @@ code validate_block::check_transaction(const transaction& tx, size_t index,
     return error::success;
 }
 
-code validate_block::check_inputs(const transaction& tx,
+code validate_block::check_inputs(uxto_hash_type const& current_utxo, const transaction& tx,
     size_t index_in_block, uint64_t& value, size_t& sigops) const
 {
     BITCOIN_ASSERT(!tx.is_coinbase());
     code error_code(error::success);
     size_t index = 0;
 
+    // log::info(LOG_BLOCKCHAIN) << "-- validate_block::check_inputs()" << encode_hash(tx.hash());
+
     //////////////////////////// TODO: parallelize. ///////////////////////////
-    for (; !error_code && index < tx.inputs.size(); ++index)
-        error_code = check_input(tx, index_in_block, index, value, sigops);
+    for (; !error_code && index < tx.inputs.size(); ++index) {
+        error_code = check_input(current_utxo, tx, index_in_block, index, value, sigops);
+    }
     ///////////////////////////////////////////////////////////////////////////
 
     if (error_code)
@@ -471,7 +508,7 @@ code validate_block::check_inputs(const transaction& tx,
     return error_code;
 }
 
-code validate_block::check_input(const transaction& tx, size_t index_in_block,
+code validate_block::check_input(uxto_hash_type const& current_utxo, const transaction& tx, size_t index_in_block,
     size_t input_index, uint64_t& value, size_t& sigops) const
 {
     BITCOIN_ASSERT(input_index < tx.inputs.size());
@@ -510,8 +547,14 @@ code validate_block::check_input(const transaction& tx, size_t index_in_block,
 
     RETURN_IF_STOPPED();
 
-    return is_output_spent(previous_point, index_in_block, input_index) ?
-        error::double_spend : error::success;
+    // log::info(LOG_BLOCKCHAIN) << "validate_block::check_input()" << encode_hash(tx.hash());
+
+    if (current_utxo.count(previous_point) == 0) {
+        return is_output_spent(previous_point, index_in_block, input_index) ?
+            error::double_spend : error::success;
+    }
+
+    return error::success;
 }
 
 code validate_block::check_sigops(const script& output, const script& input,

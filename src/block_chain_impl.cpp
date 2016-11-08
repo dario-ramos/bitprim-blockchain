@@ -232,17 +232,21 @@ bool block_chain_impl::get_last_height(uint64_t& out_height) const
 bool block_chain_impl::get_outpoint_transaction(hash_digest& out_transaction,
     const output_point& outpoint) const
 {
-    const auto spend = database_.spends.get(outpoint);
-    if (!spend.valid)
-        return false;
+    // const auto spend = database_.spends.get(outpoint);
+    // if (!spend.valid)
+    //     return false;
 
-    out_transaction = spend.hash;
-    return true;
+    // out_transaction = spend.hash;
+    // return true;
+
+
+    //TODO: Fer: Remove this function
+    return false;
 }
 
 bool block_chain_impl::contains_outpoint_in_utxo(output_point const& outpoint) const
 {
-    std::cout << "bool block_chain_impl::contains_outpoint_in_utxo(output_point const& outpoint) const\n";
+    // std::cout << "bool block_chain_impl::contains_outpoint_in_utxo(output_point const& outpoint) const\n";
     return database_.unspents.contains(outpoint);
 }
 
@@ -836,17 +840,19 @@ void block_chain_impl::fetch_spend(const chain::output_point& outpoint,
         return;
     }
 
-    const auto do_fetch = [this, outpoint, handler](size_t slock)
-    {
-        const auto spend = database_.spends.get(outpoint);
-        const auto point = spend.valid ?
-            chain::input_point{ spend.hash, spend.index } :
-            chain::input_point();
-        return spend.valid ?
-            finish_fetch(slock, handler, error::success, point) :
-            finish_fetch(slock, handler, error::not_found, point);
-    };
-    fetch_serial(do_fetch);
+    //TODO: Fer: remove this function
+
+    // const auto do_fetch = [this, outpoint, handler](size_t slock)
+    // {
+    //     const auto spend = database_.spends.get(outpoint);
+    //     const auto point = spend.valid ?
+    //         chain::input_point{ spend.hash, spend.index } :
+    //         chain::input_point();
+    //     return spend.valid ?
+    //         finish_fetch(slock, handler, error::success, point) :
+    //         finish_fetch(slock, handler, error::not_found, point);
+    // };
+    // fetch_serial(do_fetch);
 }
 
 void block_chain_impl::fetch_history(const wallet::payment_address& address,
