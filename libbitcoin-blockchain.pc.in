@@ -27,6 +27,7 @@ Version: @PACKAGE_VERSION@
 #------------------------------------------------------------------------------
 Requires: libbitcoin-database >= 3.0.0 @bitcoin_consensus_PKG@
 
+
 # Include directory and any other required compiler flags.
 #------------------------------------------------------------------------------
 Cflags: -I${includedir}
