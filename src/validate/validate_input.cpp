@@ -144,6 +144,7 @@ code validate_input::verify_script(const transaction& tx, uint32_t input_index,
     BITCOIN_ASSERT(input_index < tx.inputs().size());
     const auto& prevout = tx.inputs()[input_index].previous_output().validation;
     const auto script_data = prevout.cache.script().to_data(false);
+    const auto amount = prevout.cache.value();
 
     // Wire serialization is cached in support of large numbers of inputs.
     const auto tx_data = tx.to_data();
@@ -151,7 +152,7 @@ code validate_input::verify_script(const transaction& tx, uint32_t input_index,
     // libconsensus
     return convert_result(consensus::verify_script(tx_data.data(),
         tx_data.size(), script_data.data(), script_data.size(), input_index,
-        convert_flags(branches)));
+        convert_flags(branches), amount));
 }
 
 #else
